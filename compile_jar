@@ -1,0 +1,5 @@
+#!/bin/bash
+
+javac -cp ':~/Downloads/hadoopJars/commons-logging-1.1.3.jar:~/Downloads/hadoopJars/hadoop-common-2.6.0.jar:~/Downloads/hadoopJars/hadoop-mapreduce-client-core-2.6.0.jar:~/Downloads/hadoopJars/hadoop-mapreduce-client-jobclient-2.6.0.jar' ./mapreduce/src/com/cs435/quince/*.java
+
+jar -cf ./analysis.jar -C ./mapreduce/src com/cs435/quince/Main.class -C ./mapreduce/src com/cs435/quince/Mapper1.class -C ./mapreduce/src com/cs435/quince/Mapper2.class -C ./mapreduce/src com/cs435/quince/Reducer1.class -C ./mapreduce/src com/cs435/quince/Reducer2.class -C #./mapreduce/src com/cs435/quince/WholeFileRecordReader.class -C ./mapreduce/src com/cs435/quince/SimilarityMapper.class -C ./mapreduce/src com/cs435/quince/SimilarityCombiner.class -C ./mapreduce/src com/cs435/quince/SimilarityReducer.class
