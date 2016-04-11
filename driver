@@ -1,2 +1,111 @@
 #!/usr/bin/env python3
 
+import math
+import numpy as np
+
+#Script to use mapreduce on EPA data to predict pm2.5 emissions
+
+#maximum number of years we will predict
+MAXYEARS = np.inf
+
+#globals that will hold current request parameters
+STARTLAT = np.inf;
+ENDLAT = np.inf;
+STARTLON = np.inf;
+ENDLON = np.inf;
+USERYEARS = np.inf;
+
+
+#-------------------GET PARAMETERS FROM USER INPUT----------------
+
+
+def getLatitude(type = ""):
+	lat = float(input('Enter Desired '+ type+ ' Latitude:'))
+	if(validateLatitude(lat)):
+		return lat
+	else:
+		return np.inf
+
+def validateLatitude(lat):
+	return not np.isnan(lat) and abs(lat) >= 0 and abs(lat) <= 90;
+
+
+def getLongitude(type = ""):
+	lon = float(input('Enter Desired '+ type+ ' Longitude:'))
+	if(validateLongitude(lon)):
+		return lon
+	else:
+		return np.inf
+
+def validateLongitude(lon):
+	return not np.isnan(lon) and abs(lon) >= 0 and abs(lon) <= 180;
+
+def getYears():
+	years = float(input('Enter Desired Years:'))
+	if(validateYears(years,MAXYEARS)):
+		return years
+	else:
+		return np.inf
+
+def validateYears(years,maxYears = np.inf):
+	overMax = False;
+	if(not np.isinf(maxYears)):
+		overMax = years > maxYears
+	return not np.isnan(years) and years >= 0 and not overMax;
+
+
+
+#--------------------SET PARAMETERS TO MAKE MAPREDUCE CALL-----------
+def setStartLatitude(start):
+	global STARTLAT
+	STARTLAT = start
+
+def setEndLatitude(end):
+	global ENDLAT
+	ENDLAT = end
+
+def setStartLongitude(start):
+	global STARTLON
+	STARTLON = start
+
+def setEndLongitude(end):
+	global ENDLON
+	ENDLON = end
+
+def setYears(years):
+	global USERYEARS
+	USERYEARS = years
+
+
+#-------------------Request User Input to set Parameters-----------
+
+def printCurrentParameters():
+	myString = 'Start:%d,%d - End:%d,%d  Years:%d ' % (STARTLAT,STARTLON,ENDLAT,ENDLON,USERYEARS)
+	print(myString)
+
+def parametersNotInf():
+	if(np.isinf(STARTLAT) or np.isinf(ENDLAT) or np.isinf(STARTLON) or np.isinf(ENDLON) or np.isinf(USERYEARS)):
+		return False
+	else:
+		return True
+
+def requestParameters():
+	setStartLatitude(getLatitude('Start'))
+	setEndLatitude(getLatitude('End'))
+	setStartLongitude(getLongitude('Start'))
+	setEndLongitude(getLongitude('End'))
+	setYears(getYears())
+	if(parametersNotInf()):
+		printCurrentParameters()
+	else:
+		print("Invalid Parameters entered, Valid Ranges: lat: +- 0-90 lon:+- 0-180 years: 0-"+str(MAXYEARS))
+		requestParameters()
+
+#------------------------------MAIN------------------------------------------------------
+def main():
+	requestParameters()
+
+main()
+
+
+
