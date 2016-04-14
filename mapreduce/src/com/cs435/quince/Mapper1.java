@@ -9,14 +9,24 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 public class Mapper1 extends Mapper<LongWritable, Text, Text, Text> {
-        private final static IntWritable one = new IntWritable(1);
-        private Text word = new Text();
-        private String author;
-        private String text;
-	
+	String latitude;
+	String longitude;
+	String pmReading;
+	String timeStamp;
+
 	public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 		String fullText = value.toString();
-		word.set(keyToWrite);
-		context.write(new Text(keyToWrite), new Text());
+		String lines = fullText.split("\n");
+		for(String row : lines){
+			// get latitude
+
+			// get longitude
+			
+			// get PM2.5 reading
+			
+			// get timestamp
+
+			context.write(new Text(latitude + " " + longitude), new Text(timeStamp + " " + pmReading));
+		}
 	}
 }

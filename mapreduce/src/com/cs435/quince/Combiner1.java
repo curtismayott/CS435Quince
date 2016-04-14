@@ -7,15 +7,18 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 public class FrequencyCombiner extends Reducer<Text, Text, Text, Text> {
-        private String word = "";
-        private String author = "";
-        int sum = 0;
-        int maxFrequency = 0;
-        String lastAuthor = "";
-
         public void reduce(Text key, Iterable<Text> values, Context context)
                         throws IOException, InterruptedException {
-                String[] keySplit = key.toString().split("\t");
-		context.write(new Text(author + "\t" + word), new Text());
+                String[] coordinates = key.toString().split(" ");
+		double latitude = Double.parseDouble(coordinates[0]);
+		double longitude = Double.parseDouble(coordinates[1]);
+
+		for(Text value : values){
+			String[] tmpValues = value.toString().split(" ");
+			String timeStamp = tmpValue[0];
+			double pmReading = Double.parseDouble(tmpValue[1]);
+		}
+			
+		context.write(new Text(latitude + " " + longitude), new Text());
 	}
 }
