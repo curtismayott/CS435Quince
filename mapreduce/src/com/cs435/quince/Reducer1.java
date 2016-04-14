@@ -18,7 +18,7 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 			String timeStamp = tmpValue[0];
 			double pmReading = Double.parseDouble(tmpValue[1]);
 		}
-			
+		
 		context.write(new Text(latitude + " " + longitude), new Text());
 	}
 }
