@@ -40,7 +40,7 @@ public class Main {
                 job1.setOutputValueClass(Text.class);
                 job1.setMapOutputKeyClass(Text.class);
                 job1.setMapOutputValueClass(Text.class);
-
+		job1.setInputFormatClass(WholeFileInputFormat.class);
 		job1.setMapperClass(Mapper1.class);
 		job1.setReducerClass(Reducer1.class);
 		FileInputFormat.addInputPath(job1, new Path(args[1]));
