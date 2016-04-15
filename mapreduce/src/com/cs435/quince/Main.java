@@ -19,6 +19,8 @@ import java.nio.ByteBuffer;
 import java.util.Collections;
 
 public class Main {
+	public static int currentYear = 2016;
+	public static int oldestYear = 0;
 	public static void main(String[] args) throws Exception {
 		if (args.length != 6) {
                         System.out.printf("Usage: ProcessLogs <input dir> <number years in future> <latitude start> <latitude end> <longitude start> <longitude end>\n");

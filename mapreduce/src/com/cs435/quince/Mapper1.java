@@ -25,7 +25,8 @@ public class Mapper1 extends Mapper<LongWritable, Text, Text, Text> {
 			// get PM2.5 reading
 			
 			// get timestamp
-
+			// add oldest year
+			
 			context.write(new Text(latitude + " " + longitude), new Text(timeStamp + " " + pmReading));
 		}
 	}
