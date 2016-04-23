@@ -8,15 +8,31 @@
 #Years 1990-2015
 
 import urllib.request,os
-import numpy as np
+import zipfile
+#import numpy as np
 
-NUMYEARS = 25
+def unzip_file(pathToFile,destDirectory):
+    zip_ref = zipfile.ZipFile(pathToFile, 'r')
+    zip_ref.extractall(destDirectory)
+    zip_ref.close()
 
-STARTYEAR = 1990;
+def unzip_all_files(pathsList,destDirectory):
+    for path in pathsList:
+        unzip_file(path,destDirectory)
+
+NUMYEARS = 26
+
+STARTYEAR = 1990
+
+UNZIP_AFTER_DOWNLOAD = True
+
+FINAL_DIRECTORY = "hourly_88101"
+
 
 #url = "http://aqsdr1.epa.gov/aqsweb/aqstmp/airdata/hourly_88101_2015.zip"
 urlStart = "http://aqsdr1.epa.gov/aqsweb/aqstmp/airdata/hourly_88101_"
 urlsNames = [None]*NUMYEARS
+fileNames = [None]*NUMYEARS
 
 
 for num in range(NUMYEARS):
@@ -25,6 +41,7 @@ for num in range(NUMYEARS):
 
     url = urlsNames[num]
     file_name = url.split('/')[-1]
+    fileNames[num] = file_name
     u = urllib.request.urlopen(url)
     f = open(file_name, 'wb')
     meta = u.info()
@@ -47,3 +64,8 @@ for num in range(NUMYEARS):
         #print (status)
 
 f.close()
+
+if(not None in fileNames): # make sure all of the paths are valid
+    unzip_all_files(fileNames,FINAL_DIRECTORY)
+
+
