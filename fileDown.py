@@ -9,6 +9,8 @@
 
 import urllib.request,os
 import zipfile
+from os import listdir
+from os.path import isfile, join
 #import numpy as np
 
 def unzip_file(pathToFile,destDirectory):
@@ -20,13 +22,32 @@ def unzip_all_files(pathsList,destDirectory):
     for path in pathsList:
         unzip_file(path,destDirectory)
 
+def listOfDirectoryFiles(directory):
+    onlyfiles = [f for f in listdir(directory) if isfile(join(directory, f))]
+    return onlyfiles
+
+def concatenate_all_files(directory,outfilePath):
+    fileList = listOfDirectoryFiles(directory)
+    with open(outfilePath, 'w') as outfile:
+        for fname in fileList:
+            with open(FINAL_DIRECTORY+"/"+fname) as infile:
+                for line in infile:
+                    outfile.write(line)
+
+
+    
+
 NUMYEARS = 26
 
 STARTYEAR = 1990
 
 UNZIP_AFTER_DOWNLOAD = True
 
+CONCAT_AFTER_UNZIP = True
+
 FINAL_DIRECTORY = "hourly_88101"
+
+OUTFILE_NAME = "hourly_88101.csv"
 
 
 #url = "http://aqsdr1.epa.gov/aqsweb/aqstmp/airdata/hourly_88101_2015.zip"
@@ -64,8 +85,14 @@ for num in range(NUMYEARS):
         #print (status)
 
 f.close()
+print("finished downloading "+str(NUMYEARS)+" files")
 
-if(not None in fileNames): # make sure all of the paths are valid
-    unzip_all_files(fileNames,FINAL_DIRECTORY)
+if(UNZIP_AFTER_DOWNLOAD):
+    if(not None in fileNames): # make sure all of the paths are valid
+        unzip_all_files(fileNames,FINAL_DIRECTORY)
 
+    print("finished unzipping "+str(len(fileNames))+" files")
 
+    if(CONCAT_AFTER_UNZIP):
+        concatenate_all_files(FINAL_DIRECTORY,FINAL_DIRECTORY+"/"+OUTFILE_NAME)
+        print("finished concatenating all files")
