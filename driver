@@ -5,6 +5,13 @@ import csv
 import readStateTable
 import subprocess
 CSV = 'state_table.csv'
+HADOOP = "/usr/local/hadoop/bin/hadoop" #path to hadoop
+JARNAME = "analysis.jar"
+CLASSNAME = "com.cs435.quince.Main"
+INPUTDIRECTORY = "/hourly_88101/hourly_88101.csv" #in hdfs
+OUTPUTDIRECTORY = "predictons" #in hdfs
+LOCALOUTPUT = "." # unless changed local output will be put wherever this script runs
+
 
 #Script to use mapreduce on EPA data to predict pm2.5 emissions
 
@@ -145,9 +152,16 @@ def requestParameters():
 		print("Invalid Parameters entered,  enter full state name or abbreviation \n years: 0-"+str(MAXYEARS))
 		requestParameters()
 #-----------------------------Call to HADOOP---------------------------------------------
-
+def callHadoop():
+	#hadoop analysis.jar com.cs435.quince.Main <numyears> <state> <inputdir> <outputdir>
+	subprocess.call([HADOOP,"jar",JARNAME,CLASSNAME,USERYEARS,STATE,INPUTDIRECTORY,OUTPUTDIRECTORY])
+	subprocess.call([HADOOP,"fs","-get", OUTPUTDIRECTORY, LOCALOUTPUT])
+#-----------------------------Plot Results-----------------------------------------------
+def plotResults(resultsDirectory):
+	print("plot results is not implemented")
 #------------------------------MAIN------------------------------------------------------
 def main():
 	requestParameters()
+	callHadoop()
 
 main()
