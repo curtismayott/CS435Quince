@@ -9,9 +9,9 @@ import org.apache.hadoop.mapreduce.Reducer;
 public class Reducer1 extends Reducer<Text, Text, Text, Text> {
         public void reduce(Text key, Iterable<Text> values, Context context)
                         throws IOException, InterruptedException {
-                String[] coordinates = key.toString().split(" ");
-		double latitude = Double.parseDouble(coordinates[0]);
-		double longitude = Double.parseDouble(coordinates[1]);
+                String[] keys = key.toString().split(" ");
+		double state = Double.parseDouble(keys[0]);
+		double county = Double.parseDouble(keys[1]);
 
 		int sumX = 0;
 		int sumXY = 0;
@@ -21,13 +21,13 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 		
 		for(Text value : values){
 			String[] tmpValues = value.toString().split(" ");
-			String timeStamp = tmpValue[0];
-			double pmReading = Double.parseDouble(tmpValue[1]);
+			int year = Integer.parseInt(tmpValues[0]);
+			double pmReading = Double.parseDouble(tmpValues[1]);
 
-			sumX += timeStamp;
-			sumXY += pmReading * timeStamp;
+			sumX += year;
+			sumXY += pmReading * year;
 			sumY += pmReading;
-			sumX2 += timeStamp^2;
+			sumX2 += year ^ 2;
 			size++;
 		}
 		// a = n * sum(x, y) - sum(x) * sum(y)
@@ -36,6 +36,6 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 		// b = (1/n) (sum(y)  - sum(x))
 		int b = (1 / size) * (sumY - sumX);
 		
-		context.write(new Text(latitude + " " + longitude), new Text(a + " " + b));
+		context.write(new Text(state + " " + county), new Text(a + " " + b));
 	}
 }

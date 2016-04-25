@@ -21,18 +21,20 @@ import java.util.Collections;
 public class Main {
 	public static int currentYear = 2016;
 	public static int oldestYear = 0;
+	public static int predictionYear;
 	public static void main(String[] args) throws Exception {
 		if (args.length != 6) {
                         System.out.printf("Usage: ProcessLogs <input dir> <number years in future> <latitude start> <latitude end> <longitude start> <longitude end>\n");
                         System.exit(-1);
                 }
-// args 1 = input directory (data directory)
-// args 2 = number years in future
-// args 3 = latitude start
-// args 4 = latitude end
-// args 5 = longitude start
-// args 6 = longitude end
-                
+
+// args 1 = num years
+// args 2 = state
+// args 3 = input dir
+// args 4 = output dir
+
+	        predictionYear = Integer.parseInt(args[0]);
+
 		Configuration conf = new Configuration();
                 boolean success = false;
                 Job job1 = Job.getInstance(conf, "quince1");
@@ -42,13 +44,13 @@ public class Main {
                 job1.setOutputValueClass(Text.class);
                 job1.setMapOutputKeyClass(Text.class);
                 job1.setMapOutputValueClass(Text.class);
-		job1.setInputFormatClass(WholeFileInputFormat.class);
+		//job1.setInputFormatClass(WholeFileInputFormat.class);
 		job1.setMapperClass(Mapper1.class);
 		job1.setReducerClass(Reducer1.class);
 		FileInputFormat.addInputPath(job1, new Path(args[1]));
 		FileOutputFormat.setOutputPath(job1, new Path("/home/output1/"));
 
-		boolean success = job1.waitForCompletion(true);
+		success = job1.waitForCompletion(true);
 		if(success){
 			Job job2 = Job.getInstance(conf, "quince2");
 			job2.setJobName("quince2");
