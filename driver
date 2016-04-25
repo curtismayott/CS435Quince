@@ -154,7 +154,7 @@ def requestParameters():
 #-----------------------------Call to HADOOP---------------------------------------------
 def callHadoop():
 	#hadoop analysis.jar com.cs435.quince.Main <numyears> <state> <inputdir> <outputdir>
-	subprocess.call([HADOOP,"jar",JARNAME,CLASSNAME,USERYEARS,STATE,INPUTDIRECTORY,OUTPUTDIRECTORY])
+	subprocess.call([HADOOP,"jar",JARNAME,CLASSNAME,str(USERYEARS),STATE,INPUTDIRECTORY,OUTPUTDIRECTORY])
 	subprocess.call([HADOOP,"fs","-get", OUTPUTDIRECTORY, LOCALOUTPUT])
 #-----------------------------Plot Results-----------------------------------------------
 def plotResults(resultsDirectory):
