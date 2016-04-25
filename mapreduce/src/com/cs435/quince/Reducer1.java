@@ -10,8 +10,8 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
         public void reduce(Text key, Iterable<Text> values, Context context)
                         throws IOException, InterruptedException {
                 String[] keys = key.toString().split(" ");
-		double state = Double.parseDouble(keys[0]);
-		double county = Double.parseDouble(keys[1]);
+		String state = keys[0];
+		String county = keys[1];
 
 		int sumX = 0;
 		int sumXY = 0;
@@ -22,6 +22,7 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 		for(Text value : values){
 			String[] tmpValues = value.toString().split(" ");
 			int year = Integer.parseInt(tmpValues[0]);
+			year = year - 1990;
 			double pmReading = Double.parseDouble(tmpValues[1]);
 
 			sumX += year;

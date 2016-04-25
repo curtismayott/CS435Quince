@@ -19,13 +19,11 @@ import java.nio.ByteBuffer;
 import java.util.Collections;
 
 public class Main {
-	public static int currentYear = 2016;
-	public static int oldestYear = 0;
-	public static int predictionYear;
+	public static double predictionYear;
 	public static String state;
 	public static void main(String[] args) throws Exception {
-		if (args.length != 6) {
-                        System.out.printf("Usage: ProcessLogs <input dir> <number years in future> <latitude start> <latitude end> <longitude start> <longitude end>\n");
+		if (args.length != 4) {
+                        System.out.printf("Usage: ProcessLogs <number years in future> <state> <input dir> <output dir>\n");
                         System.exit(-1);
                 }
 
@@ -33,9 +31,12 @@ public class Main {
 // args 2 = state
 // args 3 = input dir
 // args 4 = output dir
-
-	        predictionYear = Integer.parseInt(args[1]);
-		state = args[2];
+for(int i = 0; i < args.length; i++){
+System.out.println(args[i]);
+}
+	        predictionYear = Double.parseDouble(args[0]);
+	
+		state = args[1];
 		Configuration conf = new Configuration();
                 boolean success = false;
                 Job job1 = Job.getInstance(conf, "quince1");
@@ -48,7 +49,7 @@ public class Main {
 		//job1.setInputFormatClass(WholeFileInputFormat.class);
 		job1.setMapperClass(Mapper1.class);
 		job1.setReducerClass(Reducer1.class);
-		FileInputFormat.addInputPath(job1, new Path(args[3]));
+		FileInputFormat.addInputPath(job1, new Path(args[2]));
 		FileOutputFormat.setOutputPath(job1, new Path("/output/"));
 
 		success = job1.waitForCompletion(true);
@@ -64,7 +65,7 @@ public class Main {
                 	job2.setMapperClass(Mapper2.class);
                 	job2.setReducerClass(Reducer2.class);
 			FileInputFormat.addInputPath(job1, new Path("/output/"));
-			FileOutputFormat.setOutputPath(job1, new Path(args[4]));
+			FileOutputFormat.setOutputPath(job1, new Path(args[3]));
 			
 			success = job2.waitForCompletion(true);
 			if(!success){

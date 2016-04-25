@@ -11,26 +11,28 @@ import org.apache.hadoop.mapreduce.Mapper;
 public class Mapper1 extends Mapper<LongWritable, Text, Text, Text> {
 	String state;
 	String county;
-	double pmReading;
+	String pmReading;
 	String year;
 
 	public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 		String row = value.toString();
 		String[] columns = row.split(",");
-		// get latitude
-		county = columns[5];
-
-		// get longitude
-		state = columns[6];
-		
-		// get PM2.5 reading
-		pmReading = Double.parseDouble(columns[16]);
-		
-		// get timestamp
-		year = columns[11];
-
-		// add oldest year
+		if(!row.contains("State Code")){
+			// get latitude
+			county = columns[22];
 			
-		context.write(new Text(state + " " + county), new Text(year + " " + Double.toString(pmReading)));
+			// get longitude
+			state = columns[21];
+			
+			// get PM2.5 reading
+			pmReading =columns[13];
+			
+			// get timestamp
+			year = columns[9];
+			
+			// add oldest year
+			
+			context.write(new Text(state + " " + county), new Text(year + " " + pmReading));
+		}
 	}
 }
