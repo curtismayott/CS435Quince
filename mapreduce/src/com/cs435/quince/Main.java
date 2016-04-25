@@ -64,8 +64,8 @@ System.out.println(args[i]);
 
                 	job2.setMapperClass(Mapper2.class);
                 	job2.setReducerClass(Reducer2.class);
-			FileInputFormat.addInputPath(job1, new Path("/output/"));
-			FileOutputFormat.setOutputPath(job1, new Path(args[3]));
+			FileInputFormat.addInputPath(job2, new Path("/output/"));
+			FileOutputFormat.setOutputPath(job2, new Path(args[3]));
 			
 			success = job2.waitForCompletion(true);
 			if(!success){

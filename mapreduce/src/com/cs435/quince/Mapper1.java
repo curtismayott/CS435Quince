@@ -17,12 +17,9 @@ public class Mapper1 extends Mapper<LongWritable, Text, Text, Text> {
 	public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 		String row = value.toString();
 		String[] columns = row.split(",");
-		if(!row.contains("State Code")){
-			// get latitude
+		state = columns[21];
+		if(!row.contains("State Code") && state.equals(Main.state)){
 			county = columns[22];
-			
-			// get longitude
-			state = columns[21];
 			
 			// get PM2.5 reading
 			pmReading =columns[13];
@@ -33,6 +30,11 @@ public class Mapper1 extends Mapper<LongWritable, Text, Text, Text> {
 			// add oldest year
 			
 			context.write(new Text(state + " " + county), new Text(year + " " + pmReading));
+		}
+		else{ 
+			if(row.contains("State Code")){ 
+				System.out.println(row);
+			}
 		}
 	}
 }
