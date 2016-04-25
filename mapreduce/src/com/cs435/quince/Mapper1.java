@@ -25,7 +25,7 @@ public class Mapper1 extends Mapper<LongWritable, Text, Text, Text> {
 			pmReading =columns[13];
 			
 			// get timestamp
-			year = columns[9];
+			year = ((columns[9]).split("-"))[0];
 			
 			// add oldest year
 			
