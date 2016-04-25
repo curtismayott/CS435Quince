@@ -1,7 +1,10 @@
-#!/usr/bin/env python3
-
+#! /usr/bin/python3
 import math
 import numpy as np
+import csv
+import readStateTable
+import subprocess
+CSV = 'state_table.csv'
 
 #Script to use mapreduce on EPA data to predict pm2.5 emissions
 
@@ -11,13 +14,30 @@ MAXYEARS = np.inf
 #globals that will hold current request parameters
 STARTLAT = np.inf;
 ENDLAT = np.inf;
+STATE = None
 STARTLON = np.inf;
 ENDLON = np.inf;
 USERYEARS = np.inf;
 
+print("driver started")
+
 
 #-------------------GET PARAMETERS FROM USER INPUT----------------
 
+def getState():
+	state = input('Enter Desired State name or abbreviation:')
+	if(validateState(state)):
+		return readStateTable.getCorrespondingState(state,CSV)
+	else:
+		return None
+
+def validateState(state):
+	state = readStateTable.getCorrespondingState(state,CSV)
+	valid = state is not None
+	if(valid):
+		return True
+	else:
+		return False
 
 def getLatitude(type = ""):
 	lat = float(input('Enter Desired '+ type+ ' Latitude:'))
@@ -76,20 +96,35 @@ def setYears(years):
 	global USERYEARS
 	USERYEARS = years
 
+def setState(state):
+	global STATE
+	STATE = state
+
 
 #-------------------Request User Input to set Parameters-----------
 
 def printCurrentParameters():
-	myString = 'Start:%d,%d - End:%d,%d  Years:%d ' % (STARTLAT,STARTLON,ENDLAT,ENDLON,USERYEARS)
+	if(parametersNotInfLatLon()):
+		myString = 'Start:%d,%d - End:%d,%d  Years:%d ' % (STARTLAT,STARTLON,ENDLAT,ENDLON,USERYEARS)
+	elif(parametersValid()):
+		myString = 'State:%s, Years:%d' % (STATE,USERYEARS)
+	else:
+		myString = "Parameters not valid"
 	print(myString)
 
-def parametersNotInf():
+def parametersNotInfLatLon():
 	if(np.isinf(STARTLAT) or np.isinf(ENDLAT) or np.isinf(STARTLON) or np.isinf(ENDLON) or np.isinf(USERYEARS)):
 		return False
 	else:
 		return True
 
-def requestParameters():
+def parametersValid():
+	if(STATE is None or np.isinf(USERYEARS)):
+		return False
+	else:
+		return True
+
+def requestParametersLatLon():
 	setStartLatitude(getLatitude('Start'))
 	setEndLatitude(getLatitude('End'))
 	setStartLongitude(getLongitude('Start'))
@@ -101,11 +136,18 @@ def requestParameters():
 		print("Invalid Parameters entered, Valid Ranges: lat: +- 0-90 lon:+- 0-180 years: 0-"+str(MAXYEARS))
 		requestParameters()
 
+def requestParameters():
+	setState(getState())
+	setYears(getYears())
+	if(parametersValid()):
+		printCurrentParameters()
+	else:
+		print("Invalid Parameters entered,  enter full state name or abbreviation \n years: 0-"+str(MAXYEARS))
+		requestParameters()
+#-----------------------------Call to HADOOP---------------------------------------------
+
 #------------------------------MAIN------------------------------------------------------
 def main():
 	requestParameters()
 
 main()
-
-
-
