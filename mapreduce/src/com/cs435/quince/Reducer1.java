@@ -9,7 +9,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 public class Reducer1 extends Reducer<Text, Text, Text, Text> {
         public void reduce(Text key, Iterable<Text> values, Context context)
                         throws IOException, InterruptedException {
-                String[] keys = key.toString().split(" ");
+                String[] keys = key.toString().split("\t");
 		String state = keys[0];
 		String county = keys[1];
 
@@ -20,23 +20,31 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 		int size = 0;
 		
 		for(Text value : values){
-			String[] tmpValues = value.toString().split(" ");
+			String[] tmpValues = value.toString().split("\t");
 			int year = Integer.parseInt(tmpValues[0]);
 			year = year - 1990;
 			double pmReading = Double.parseDouble(tmpValues[1]);
-
-			sumX += year;
-			sumXY += pmReading * year;
-			sumY += pmReading;
-			sumX2 += year ^ 2;
-			size++;
+			if(pmReading > 0){
+				sumX += year;
+				sumXY += pmReading * year;
+				sumY += pmReading;
+				sumX2 += year * year;
+				size++;
+			}
 		}
 		// a = n * sum(x, y) - sum(x) * sum(y)
 		// 	n * sum(x^2) - sum(x)^2
-		int a = (size * sumXY - sumX * sumY) / (size * sumX2 - sumX^2);
+		//int a = (size * sumXY - sumX * sumY) / (size * sumX2 - sumX^2);
+		try{
+		int a = ((sumY * sumX2) - (sumX * sumXY)) / ((size * sumX2) - (sumX * sumX));
+
 		// b = (1/n) (sum(y)  - sum(x))
-		int b = (1 / size) * (sumY - sumX);
-		
-		context.write(new Text(state + " " + county), new Text(a + " " + b));
+		//int b = (1 / size) * (sumY - sumX);
+		int b = ((size * sumXY) - (sumX * sumY)) / ((size * sumX2) - (sumX * sumX));
+
+		context.write(new Text(state + "\t" + county), new Text(a + "\t" + b));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 }

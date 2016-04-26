@@ -8,33 +8,28 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
-public class Mapper1 extends Mapper<LongWritable, Text, Text, Text> {
+public class Mapper1 extends Mapper<Object, Text, Text, Text> {
 	String state;
 	String county;
 	String pmReading;
 	String year;
 
-	public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+	public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 		String row = value.toString();
+		row = row.replaceAll("\"", "");
 		String[] columns = row.split(",");
 		state = columns[21];
 		if(!row.contains("State Code") && state.equals(Main.state)){
 			county = columns[22];
-			
 			// get PM2.5 reading
 			pmReading =columns[13];
-			
 			// get timestamp
 			year = ((columns[9]).split("-"))[0];
-			
-			// add oldest year
-			
-			context.write(new Text(state + " " + county), new Text(year + " " + pmReading));
+			//System.out.println(state + " " + county + " " + pmReading + " " + year);
+			context.write(new Text(state + "\t" + county), new Text(year + "\t" + pmReading));
 		}
 		else{ 
-			if(row.contains("State Code")){ 
-				System.out.println(row);
-			}
+			//System.out.println(row);
 		}
 	}
 }
