@@ -17,7 +17,7 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 		double sumXY = 0;
 		double sumY = 0;
 		double sumX2 = 0;
-		int size = 0;
+		double size = 0;
 		
 		for(Text value : values){
 			String[] tmpValues = value.toString().split("\t");
@@ -29,7 +29,7 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 				sumXY += pmReading * year;
 				sumY += pmReading;
 				sumX2 += year * year;
-				size++;
+				size = size + 1.0;;
 			}
 		}
 		// a = n * sum(x, y) - sum(x) * sum(y)
