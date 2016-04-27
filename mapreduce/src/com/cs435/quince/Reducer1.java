@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -11,9 +12,14 @@ import org.apache.hadoop.mapreduce.Reducer;
 public class Reducer1 extends Reducer<Text, Text, Text, Text> {
         public void reduce(Text key, Iterable<Text> values, Context context)
                         throws IOException, InterruptedException {
-                String[] keys = key.toString().split("\t");
+        HashMap<Double, Double> year_pm_reading_map = new HashMap<Double,Double>();
+        HashMap<Double, Double> prediction_actual_map = new HashMap<Double,Double>();         	
+        String[] keys = key.toString().split("\t");
 		String state = keys[0];
 		String county = keys[1];
+		String foldNumber = keys[2];
+
+
 		Calendar cal = new GregorianCalendar();
 		double sumX = 0;
 		double sumXY = 0;
@@ -34,6 +40,7 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 			year += dayOfYear / 365;
 			double pmReading = Double.parseDouble(tmpValues[1]);
 			if(pmReading > 0){
+				year_pm_reading_map.put(year,pmReading);
 				sumX += year;
 				sumXY += pmReading * year;
 				sumY += pmReading;
@@ -55,7 +62,14 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 //System.out.println("sumX: " + sumX + " sumY: " + sumY + " sumXY: " + sumXY + " sumX2: " + sumX2 + " " + size);
 				y = a * Main.predictionYear + b;
 				y = ((int)(y * 100.0)) / 100.0;
-				context.write(new Text(state + " " + county), new Text(Double.toString(y)));
+				//keep track of the prediction versus the actual value
+				for(Double year : year_pm_reading_map.keySet())
+				{
+					Double yearPrediction = a * year + b;
+					prediction_actual_map.put(yearPrediction,year_pm_reading_map.get(year));
+				}
+				//context.write(new Text(state + " " + county), new Text(Double.toString(y)));
+
 			}catch(Exception e){
 				e.printStackTrace();
 			}
