@@ -17,7 +17,7 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
         String[] keys = key.toString().split("\t");
 		String state = keys[0];
 		String county = keys[1];
-		String foldNumber = keys[2];
+		
 
 
 		Calendar cal = new GregorianCalendar();
@@ -39,13 +39,21 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 			year = year - 1990;
 			year += dayOfYear / 365;
 			double pmReading = Double.parseDouble(tmpValues[1]);
+			Integer foldNumber = Integer.parseInt(tmpValues[2]);
 			if(pmReading > 0){
-				year_pm_reading_map.put(year,pmReading);
-				sumX += year;
-				sumXY += pmReading * year;
-				sumY += pmReading;
-				sumX2 += year * year;
-				size = size + 1.0;
+				if(foldNumber == 1)
+				{
+					year_pm_reading_map.put(year,pmReading);
+				}
+				else
+				{
+					sumX += year;
+					sumXY += pmReading * year;
+					sumY += pmReading;
+					sumX2 += year * year;
+					size = size + 1.0;
+				}
+
 			}
 		}
 		// a = n * sum(x, y) - sum(x) * sum(y)
