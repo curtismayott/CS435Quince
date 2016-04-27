@@ -9,12 +9,13 @@ import java.util.ArrayList;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
+import java.lang.Math;
 
 public class Reducer1 extends Reducer<Text, Text, Text, Text> {
         public void reduce(Text key, Iterable<Text> values, Context context)
                         throws IOException, InterruptedException {
         ArrayList<HashMap<Double, Double> > year_pm_reading_map = new ArrayList<HashMap<Double,Double> >();
-        HashMap<Double, Double> prediction_actual_map = new HashMap<Double,Double>();         	
+        ArrayList<ArrayList<Double> > squaredErrors = new ArrayList<ArrayList<Double> >();         	
         String[] keys = key.toString().split("\t");
 		String state = keys[0];
 		String county = keys[1];
@@ -137,9 +138,10 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 					for(Double year : year_pm_reading_map.get(i).keySet())
 					{
 						Double yearPrediction = a * year + b;
-						prediction_actual_map.put(yearPrediction,year_pm_reading_map.get(i).get(year));
+						squaredErrors.get(i).put(Math.pow(yearPrediction-year_pm_reading_map.get(i).get(year),2));
 					}
 				}
+
 
 				//context.write(new Text(state + " " + county), new Text(Double.toString(y)));
 
