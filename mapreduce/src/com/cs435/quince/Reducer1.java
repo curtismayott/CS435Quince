@@ -1,7 +1,9 @@
 package com.cs435.quince;
 
 import java.io.IOException;
-
+import java.util.Date;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -23,9 +25,14 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 			String[] tmpValues = value.toString().split("\t");
 			String yearMonth = tmpValues[0];
 			double year = Double.parseDouble(yearMonth.split("-")[0]);
-			double month = Double.parseDouble(yearMonth.split("-")[1]);
+			int month = Integer.parseInt(yearMonth.split("-")[1]);
+			int day = Integer.parseInt(yearMonth.split("-")[2]);
+			Calendar cal = new GregorianCalendar();
+			cal.setTime(new Date((int)year - 1900, month - 1, day - 1)); // Give your own date
+			double dayOfYear = (double)cal.get(Calendar.DAY_OF_YEAR);
+			
 			year = year - 1990;
-			year += (month - 1) / 12;
+			year += dayOfYear / 365;
 			double pmReading = Double.parseDouble(tmpValues[1]);
 			if(pmReading > 0){
 				sumX += year;

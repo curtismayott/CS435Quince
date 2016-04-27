@@ -24,7 +24,7 @@ public class Mapper1 extends Mapper<Object, Text, Text, Text> {
 			// get PM2.5 reading
 			pmReading =columns[13];
 			// get timestamp
-			yearMonth = ((columns[9]).split("-"))[0] + "-" + ((columns[9]).split("-"))[1];
+			yearMonth = columns[9];
 			
 			//System.out.println(state + " " + county + " " + pmReading + " " + year);
 			context.write(new Text(state + "\t" + county), new Text(yearMonth + "\t" + pmReading));
