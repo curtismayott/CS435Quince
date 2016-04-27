@@ -34,7 +34,7 @@ public class Main {
 for(int i = 0; i < args.length; i++){
 System.out.println(args[i]);
 }
-	        predictionYear = Double.parseDouble(args[0]);
+	        predictionYear = Double.parseDouble(args[0]) + 25.0;
 	
 		state = args[1];
 		Configuration conf = new Configuration();
@@ -64,7 +64,7 @@ System.out.println(args[i]);
 
                 	job2.setMapperClass(Mapper2.class);
                 	job2.setReducerClass(Reducer2.class);
-			FileInputFormat.addInputPath(job2, new Path("/output/"));
+			FileInputFormat.addInputPath(job2, new Path("/output/part-r-00000"));
 			FileOutputFormat.setOutputPath(job2, new Path(args[3]));
 			
 			success = job2.waitForCompletion(true);
