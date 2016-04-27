@@ -14,7 +14,7 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
                 String[] keys = key.toString().split("\t");
 		String state = keys[0];
 		String county = keys[1];
-
+		Calendar cal = new GregorianCalendar();
 		double sumX = 0;
 		double sumXY = 0;
 		double sumY = 0;
@@ -27,7 +27,6 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 			double year = Double.parseDouble(yearMonth.split("-")[0]);
 			int month = Integer.parseInt(yearMonth.split("-")[1]);
 			int day = Integer.parseInt(yearMonth.split("-")[2]);
-			Calendar cal = new GregorianCalendar();
 			cal.setTime(new Date((int)year - 1900, month - 1, day - 1)); // Give your own date
 			double dayOfYear = (double)cal.get(Calendar.DAY_OF_YEAR);
 			
