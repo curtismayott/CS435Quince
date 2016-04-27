@@ -29,7 +29,7 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 				sumXY += pmReading * year;
 				sumY += pmReading;
 				sumX2 += year * year;
-				size = size + 1.0;;
+				size = size + 1.0;
 			}
 		}
 		// a = n * sum(x, y) - sum(x) * sum(y)
