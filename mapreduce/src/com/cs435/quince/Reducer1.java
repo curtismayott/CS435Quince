@@ -21,8 +21,11 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 		
 		for(Text value : values){
 			String[] tmpValues = value.toString().split("\t");
-			int year = Integer.parseInt(tmpValues[0]);
+			String yearMonth = tmpValues[0];
+			double year = Double.parseDouble(yearMonth.split("-")[0]);
+			double month = Double.parseDouble(yearMonth.split("-")[1]);
 			year = year - 1990;
+			year += (month - 1) / 12;
 			double pmReading = Double.parseDouble(tmpValues[1]);
 			if(pmReading > 0){
 				sumX += year;
@@ -34,17 +37,19 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 		}
 		// a = n * sum(x, y) - sum(x) * sum(y)
 		// 	n * sum(x^2) - sum(x)^2
-		try{
-		double a = (size * sumXY - sumX * sumY) / (size * sumX2 - sumX * sumX);
+		if(size > 1){
+			try{
+				double a = (size * sumXY - sumX * sumY) / (size * sumX2 - sumX * sumX);
 		//int a = ((sumY * sumX2) - (sumX * sumXY)) / ((size * sumX2) - (sumX * sumX));
 
 		// b = (1/n) (sum(y)  - sum(x))
-		double b = (1 / size) * (sumY - a * sumX);
+				double b = (1 / size) * (sumY - a * sumX);
 		//int b = ((size * sumXY) - (sumX * sumY)) / ((size * sumX2) - (sumX * sumX));
 //System.out.println("sumX: " + sumX + " sumY: " + sumY + " sumXY: " + sumXY + " sumX2: " + sumX2 + " " + size);
-		context.write(new Text(state + "\t" + county), new Text(a + "\t" + b));
-		}catch(Exception e){
-			e.printStackTrace();
+				context.write(new Text(state + "\t" + county), new Text(a + "\t" + b));
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 		}
 	}
 }

@@ -12,7 +12,7 @@ public class Mapper1 extends Mapper<Object, Text, Text, Text> {
 	String state;
 	String county;
 	String pmReading;
-	String year;
+	String yearMonth;
 
 	public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 		String row = value.toString();
@@ -24,9 +24,10 @@ public class Mapper1 extends Mapper<Object, Text, Text, Text> {
 			// get PM2.5 reading
 			pmReading =columns[13];
 			// get timestamp
-			year = ((columns[9]).split("-"))[0];
+			yearMonth = ((columns[9]).split("-"))[0] + "-" + ((columns[9]).split("-"))[1];
+			
 			//System.out.println(state + " " + county + " " + pmReading + " " + year);
-			context.write(new Text(state + "\t" + county), new Text(year + "\t" + pmReading));
+			context.write(new Text(state + "\t" + county), new Text(yearMonth + "\t" + pmReading));
 		}
 		else{ 
 			//System.out.println(row);
