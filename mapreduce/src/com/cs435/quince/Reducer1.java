@@ -45,6 +45,7 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 		// 	n * sum(x^2) - sum(x)^2
 		if(size > 1){
 			try{
+				double y = 0;
 				double a = (size * sumXY - sumX * sumY) / (size * sumX2 - sumX * sumX);
 		//int a = ((sumY * sumX2) - (sumX * sumXY)) / ((size * sumX2) - (sumX * sumX));
 
@@ -52,7 +53,9 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 				double b = (1 / size) * (sumY - a * sumX);
 		//int b = ((size * sumXY) - (sumX * sumY)) / ((size * sumX2) - (sumX * sumX));
 //System.out.println("sumX: " + sumX + " sumY: " + sumY + " sumXY: " + sumXY + " sumX2: " + sumX2 + " " + size);
-				context.write(new Text(state + "\t" + county), new Text(a + "\t" + b));
+				y = a * Main.predictionYear + b;
+				y = ((int)(y * 100.0)) / 100.0;
+				context.write(new Text(state + " " + county), new Text(Double.toString(y)));
 			}catch(Exception e){
 				e.printStackTrace();
 			}

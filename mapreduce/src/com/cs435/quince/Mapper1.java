@@ -13,6 +13,8 @@ public class Mapper1 extends Mapper<Object, Text, Text, Text> {
 	String county;
 	String pmReading;
 	String yearMonth;
+	static int foldCounter;
+	
 
 	public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 		String row = value.toString();
@@ -21,13 +23,15 @@ public class Mapper1 extends Mapper<Object, Text, Text, Text> {
 		state = columns[21];
 		if(!row.contains("State Code") && state.equals(Main.state)){
 			county = columns[22];
+			//create a fold number
+			foldCounter = (foldCounter + 1) % Main.numberOfFolds;
 			// get PM2.5 reading
 			pmReading =columns[13];
 			// get timestamp
 			yearMonth = columns[9];
 			
-			//System.out.println(state + " " + county + " " + pmReading + " " + year);
-			context.write(new Text(state + "\t" + county), new Text(yearMonth + "\t" + pmReading));
+			//System.out.println(state + " " + county + " " + foldNumber + " " + pmReading + " " + year);
+			context.write(new Text(state + "\t" + county + "\t" + foldCounter), new Text(yearMonth + "\t" + pmReading));
 		}
 		else{ 
 			//System.out.println(row);

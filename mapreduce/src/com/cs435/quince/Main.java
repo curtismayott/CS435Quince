@@ -20,6 +20,7 @@ import java.util.Collections;
 
 public class Main {
 	public static double predictionYear;
+	public static int numberOfFolds = 4;
 	public static String state;
 	public static void main(String[] args) throws Exception {
 		if (args.length != 4) {
