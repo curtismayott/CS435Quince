@@ -39,7 +39,7 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 		//int a = ((sumY * sumX2) - (sumX * sumXY)) / ((size * sumX2) - (sumX * sumX));
 
 		// b = (1/n) (sum(y)  - sum(x))
-		double b = (1 / size) * (sumY - sumX);
+		double b = (1 / size) * (sumY - a * sumX);
 		//int b = ((size * sumXY) - (sumX * sumY)) / ((size * sumX2) - (sumX * sumX));
 //System.out.println("sumX: " + sumX + " sumY: " + sumY + " sumXY: " + sumXY + " sumX2: " + sumX2 + " " + size);
 		context.write(new Text(state + "\t" + county), new Text(a + "\t" + b));

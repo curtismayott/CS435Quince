@@ -9,7 +9,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 public class Reducer2 extends Reducer<Text, Text, Text, Text> {
         public void reduce(Text key, Iterable<Text> values, Context context)
                         throws IOException, InterruptedException {
-                String[] columns = key.toString().split(" ");
+                String[] columns = key.toString().split("\t");
 		double a = Double.parseDouble(columns[0]);
 		double b= Double.parseDouble(columns[1]);
 
@@ -20,7 +20,7 @@ public class Reducer2 extends Reducer<Text, Text, Text, Text> {
 		//int size = 0;
 		
 		for(Text value : values){
-			String[] tmpValues = value.toString().split(" ");
+			String[] tmpValues = value.toString().split("\t");
 			String timeStamp = tmpValues[0];
 			double pmReading = Double.parseDouble(tmpValues[1]);
 
