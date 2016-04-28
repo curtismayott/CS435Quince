@@ -100,7 +100,7 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 							sumXY_2 += pmReading * year;
 							sumY_2 += pmReading;
 							sumX2_2 += year * year;
-							size_2 = size_1 + 1.0;
+							size_2 = size_2 + 1.0;
 							addReadingToFold(1,year,pmReading);
 		                     break;
 		            case 3: sumX_3 += year;
@@ -114,7 +114,7 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 							sumXY_4 += pmReading * year;
 							sumY_4 += pmReading;
 							sumX2_4 += year * year;
-							size_4 = size_1 + 1.0;
+							size_4 = size_4 + 1.0;
 							addReadingToFold(3,year,pmReading);
 							break;
 		            
