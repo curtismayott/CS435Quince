@@ -13,6 +13,7 @@ import java.lang.Math;
 
 public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 		public ArrayList<HashMap<Double, ArrayList<Double> > > year_pm_reading_map = new ArrayList<HashMap<Double, ArrayList<Double> > >();
+		public HashMap<Integer,Double> sizes = new HashMap<Integer,Double>();
         public void reduce(Text key, Iterable<Text> values, Context context)
                         throws IOException, InterruptedException {
         
@@ -174,6 +175,7 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 
 						Double aTrain = (merge_size * merge_sumXY - merge_sumX * merge_sumY) / (merge_size * merge_sumX2 - merge_sumX * merge_sumX);
 						Double bTrain = (1 / merge_size) * (merge_sumY - aTrain * merge_sumX);
+						sizes.put(fold,merge_size);
 						Double yearPrediction =  aTrain * year * bTrain;
 						for(Double reading : year_pm_reading_map.get(fold).get(year))
 						{
@@ -183,8 +185,9 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 					}
 				}
 
+				Double averageRMSE = calculateAllRMSE(squaredErrors,sizes);
 
-				context.write(new Text(state + " " + county), new Text(Double.toString(y)));
+				context.write(new Text(state + " " + county), new Text(Double.toString(y) + "\t" + Double.toString(averageRMSE)));
 
 			}catch(Exception e){
 				e.printStackTrace();
@@ -205,5 +208,28 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 			newList.add(reading);
 			year_pm_reading_map.get(foldNum).put(year,newList);
 		}
+	}
+
+	public Double calculateRMSE(ArrayList<Double> squaredErrorList,Double n)
+	{
+		Double sumErrors = 0.0;
+		for (Double error : squaredErrorList) {
+			sumErrors += error;
+		}
+		Double rmse = Math.sqrt(sumErrors / n);
+		return rmse;
+	}
+
+	public Double calculateAllRMSE(ArrayList<ArrayList<Double> > squaredErrorsArray,HashMap<Integer,Double> sizesArr)
+	{
+		Integer fold = 1;
+		Double overallSum = 0.0;
+		Double averageRMSE = 0.0;
+		for(ArrayList<Double> list : squaredErrorsArray)
+		{
+			overallSum += calculateRMSE(list,sizesArr.get(fold));
+		}
+		averageRMSE = overallSum / squaredErrorsArray.size();
+		return averageRMSE;
 	}
 }
