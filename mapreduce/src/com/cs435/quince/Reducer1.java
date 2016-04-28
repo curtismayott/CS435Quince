@@ -12,9 +12,10 @@ import org.apache.hadoop.mapreduce.Reducer;
 import java.lang.Math;
 
 public class Reducer1 extends Reducer<Text, Text, Text, Text> {
+		public ArrayList<HashMap<Double, ArrayList<Double> > > year_pm_reading_map = new ArrayList<HashMap<Double, ArrayList<Double> > >();
         public void reduce(Text key, Iterable<Text> values, Context context)
                         throws IOException, InterruptedException {
-        ArrayList<HashMap<Double, Double> > year_pm_reading_map = new ArrayList<HashMap<Double,Double> >();
+        
         ArrayList<ArrayList<Double> > squaredErrors = new ArrayList<ArrayList<Double> >();         	
         String[] keys = key.toString().split("\t");
 		String state = keys[0];
@@ -51,7 +52,12 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 		double sumXY_4 = 0;
 		double sumY_4 = 0;
 		double sumX2_4 = 0;
-		double size_4 = 0;					
+		double size_4 = 0;	
+		double merge_size = 0;
+		double merge_sumX = 0;
+		double merge_sumXY = 0;
+		double merge_sumY = 0;
+		double merge_sumX2 = 0;				
 		
 		for(Text value : values){
 			String[] tmpValues = value.toString().split("\t");
@@ -88,28 +94,28 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 							sumY_1 += pmReading;
 							sumX2_1 += year * year;
 							size_1 = size_1 + 1.0;
-							year_pm_reading_map.get(0).put(year,pmReading);
+							addReadingToFold(0,year,pmReading);
 		                     break;
 		            case 2: sumX_2 += year;
 							sumXY_2 += pmReading * year;
 							sumY_2 += pmReading;
 							sumX2_2 += year * year;
 							size_2 = size_1 + 1.0;
-							year_pm_reading_map.get(1).put(year,pmReading);
+							addReadingToFold(1,year,pmReading);
 		                     break;
 		            case 3: sumX_3 += year;
 							sumXY_3 += pmReading * year;
 							sumY_3 += pmReading;
 							sumX2_3 += year * year;
 							size_3 = size_3 + 1.0;
-							year_pm_reading_map.get(2).put(year,pmReading);
+							addReadingToFold(2,year,pmReading);
 		                     break;
 		            case 4: sumX_4 += year;
 							sumXY_4 += pmReading * year;
 							sumY_4 += pmReading;
 							sumX2_4 += year * year;
 							size_4 = size_1 + 1.0;
-							year_pm_reading_map.get(3).put(year,pmReading);
+							addReadingToFold(3,year,pmReading);
 							break;
 		            
 		            default: 
@@ -132,22 +138,72 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 //System.out.println("sumX: " + sumX + " sumY: " + sumY + " sumXY: " + sumXY + " sumX2: " + sumX2 + " " + size);
 				y = a * Main.predictionYear + b;
 				y = ((int)(y * 100.0)) / 100.0;
+
 				//keep track of the prediction versus the actual value
-				for(Integer i = 0; i < year_pm_reading_map.size();i++)
+				for(Integer fold = 1; fold <= year_pm_reading_map.size();fold++)
 				{
-					for(Double year : year_pm_reading_map.get(i).keySet())
+					for(Double year : year_pm_reading_map.get(fold).keySet())
 					{
-						Double yearPrediction = a * year + b;
-						squaredErrors.get(i).put(Math.pow(yearPrediction-year_pm_reading_map.get(i).get(year),2));
+						switch(fold)
+						{
+							case 1: merge_size = size_2 + size_3 + size_4;
+									merge_sumX = sumX_2 + sumX_3 + sumX_4;
+									merge_sumXY = sumXY_2 + sumXY_3 + sumXY_4;
+									merge_sumY = sumY_2 + sumY_3 + sumY_4;
+									merge_sumX2 = sumX2_2 + sumX2_3 + sumXY_4;
+									break;
+							case 2: merge_size = size_1 + size_3 + size_4;
+									merge_sumX = sumX_1 + sumX_3 + sumX_4;
+									merge_sumXY = sumXY_1 + sumXY_3 + sumXY_4;
+									merge_sumY = sumY_1 + sumY_3 + sumY_4;
+									merge_sumX2 =sumX2_1 + sumX2_3 + sumXY_4;
+									break;
+							case 3: merge_size = size_1 + size_2 + size_4;
+									merge_sumX = sumX_1 + sumX_2 + sumX_4;
+									merge_sumXY = sumXY_1 + sumXY_2 + sumXY_4;
+									merge_sumY = sumY_1 + sumY_2 + sumY_4;
+									merge_sumX2 = sumX2_1 + sumX2_2 + sumX2_4;
+									break;
+							case 4: merge_size = size_1 + size_2 + size_4;
+									merge_sumX = sumX_1 + sumX_2 + sumX_3;
+									merge_sumXY = sumXY_1 + sumXY_2 + sumXY_3;
+									merge_sumY = sumY_1 + sumY_2 + sumY_3;
+									merge_sumX2 =	sumX2_1 + sumX2_2 + sumX2_3;						
+									break;
+						}
+
+						Double aTrain = (merge_size * merge_sumXY - merge_sumX * merge_sumY) / (merge_size * merge_sumX2 - merge_sumX * merge_sumX);
+						Double bTrain = (1 / merge_size) * (merge_sumY - aTrain * merge_sumX);
+						Double yearPrediction =  aTrain * year * bTrain;
+						for(Double reading : year_pm_reading_map.get(fold).get(year))
+						{
+							squaredErrors.get(fold).add(Math.pow(yearPrediction-reading,2));
+						}
+						
 					}
 				}
 
 
-				//context.write(new Text(state + " " + county), new Text(Double.toString(y)));
+				context.write(new Text(state + " " + county), new Text(Double.toString(y)));
 
 			}catch(Exception e){
 				e.printStackTrace();
 			}
+		}
+	}
+	public void addReadingToFold(Integer foldNum,Double year,Double reading)
+	{
+		//arraylist<hashmap<double, arraylist<double>>>
+		ArrayList<Double> list = year_pm_reading_map.get(foldNum).get(year);
+		if(list != null)
+		{
+			list.add(reading);
+		}
+		else
+		{
+			ArrayList<Double> newList = new ArrayList<Double>();
+			newList.add(reading);
+			year_pm_reading_map.get(foldNum).put(year,newList);
 		}
 	}
 }
