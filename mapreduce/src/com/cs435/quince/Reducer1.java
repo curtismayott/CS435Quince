@@ -12,6 +12,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import java.lang.Math;
 
 public class Reducer1 extends Reducer<Text, Text, Text, Text> {
+	    public boolean DEBUG = false;
 		public ArrayList<HashMap<Double, ArrayList<Double> > > year_pm_reading_map = new ArrayList<HashMap<Double, ArrayList<Double> > >();
 		public HashMap<Integer,Double> sizes = new HashMap<Integer,Double>();
 
@@ -182,11 +183,16 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 						Double bTrain = (1 / merge_size) * (merge_sumY - aTrain * merge_sumX);
 						sizes.put(fold,merge_size);
 						Double yearPrediction =  aTrain * year * bTrain;
+						yearPrediction = ((int)(yearPrediction * 100.0)) / 100.0;
 						for(Double reading : year_pm_reading_map.get(fold-1).get(year))
 						{
 							if(squaredErrors.size() < Main.numberOfFolds)
 							{
 								squaredErrors = initSquaredError(Main.numberOfFolds);
+							}
+							if(DEBUG)
+							{
+								System.out.println("a:"+aTrain+" b:" +bTrain+"prediction:"+yearPrediction+"reading:"+reading+ "squaredError"+ Math.pow(yearPrediction-reading,2));
 							}
 							squaredErrors.get(fold-1).add(Math.pow(yearPrediction-reading,2));
 						}
@@ -246,6 +252,11 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 		for (Double error : squaredErrorList) {
 			sumErrors += error;
 		}
+		if(DEBUG)
+		{
+			System.out.println("n in fold:"+n);
+		}
+		
 		Double rmse = Math.sqrt(sumErrors / n);
 		return rmse;
 	}
@@ -257,7 +268,15 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 		Double averageRMSE = 0.0;
 		for(ArrayList<Double> list : squaredErrorsArray)
 		{
-			overallSum += calculateRMSE(list,sizesArr.get(fold));
+			Double currentRmse = calculateRMSE(list,sizesArr.get(fold));
+			if(DEBUG)
+			{
+				System.out.println("one of the rmses:"+currentRmse);
+			}
+			
+			overallSum += currentRmse;
+			fold++;
+
 		}
 		averageRMSE = overallSum / squaredErrorsArray.size();
 		return averageRMSE;

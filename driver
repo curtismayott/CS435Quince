@@ -9,7 +9,7 @@ HADOOP = "/usr/local/hadoop/bin/hadoop" #path to hadoop
 JARNAME = "analysis.jar"
 CLASSNAME = "com.cs435.quince.Main"
 INPUTDIRECTORY = "/hourly_88101/hourly_88101.csv" #in hdfs
-#INPUTDIRECTORY = "/hourly_88101/hourly_88101_trinity.csv" #in hdfs for quick testing
+#INPUTDIRECTORY = "/hourly_88101/hourly_88101_Fresno.csv" #in hdfs for quick testing
 
 OUTPUTDIRECTORY = "/output" #in hdfs
 LOCALOUTPUT = "." # unless changed local output will be put wherever this script runs
