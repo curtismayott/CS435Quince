@@ -14,6 +14,7 @@ import java.lang.Math;
 public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 		public ArrayList<HashMap<Double, ArrayList<Double> > > year_pm_reading_map = new ArrayList<HashMap<Double, ArrayList<Double> > >();
 		public HashMap<Integer,Double> sizes = new HashMap<Integer,Double>();
+
         public void reduce(Text key, Iterable<Text> values, Context context)
                         throws IOException, InterruptedException {
         
@@ -22,6 +23,10 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 		String state = keys[0];
 		String county = keys[1];
 		
+		if(year_pm_reading_map.size() == 0)
+		{
+			year_pm_reading_map =  initReadingMap(Main.numberOfFolds);
+		}
 
 
 		Calendar cal = new GregorianCalendar();
@@ -143,7 +148,7 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 				//keep track of the prediction versus the actual value
 				for(Integer fold = 1; fold <= year_pm_reading_map.size();fold++)
 				{
-					for(Double year : year_pm_reading_map.get(fold).keySet())
+					for(Double year : year_pm_reading_map.get(fold-1).keySet())
 					{
 						switch(fold)
 						{
@@ -177,9 +182,13 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 						Double bTrain = (1 / merge_size) * (merge_sumY - aTrain * merge_sumX);
 						sizes.put(fold,merge_size);
 						Double yearPrediction =  aTrain * year * bTrain;
-						for(Double reading : year_pm_reading_map.get(fold).get(year))
+						for(Double reading : year_pm_reading_map.get(fold-1).get(year))
 						{
-							squaredErrors.get(fold).add(Math.pow(yearPrediction-reading,2));
+							if(squaredErrors.size() < Main.numberOfFolds)
+							{
+								squaredErrors = initSquaredError(Main.numberOfFolds);
+							}
+							squaredErrors.get(fold-1).add(Math.pow(yearPrediction-reading,2));
 						}
 						
 					}
@@ -196,6 +205,7 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 	}
 	public void addReadingToFold(Integer foldNum,Double year,Double reading)
 	{
+	
 		//arraylist<hashmap<double, arraylist<double>>>
 		ArrayList<Double> list = year_pm_reading_map.get(foldNum).get(year);
 		if(list != null)
@@ -208,6 +218,26 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 			newList.add(reading);
 			year_pm_reading_map.get(foldNum).put(year,newList);
 		}
+	}
+	public ArrayList<HashMap<Double, ArrayList<Double> > > initReadingMap(int numMaps)
+	{
+		ArrayList<HashMap<Double, ArrayList<Double> > > rMap = new ArrayList<HashMap<Double, ArrayList<Double> > >();
+		HashMap<Double, ArrayList<Double> > temp = new HashMap<Double, ArrayList<Double> >();
+		for( int i = 0; i < numMaps; i++)
+		{
+			rMap.add(temp);
+		}
+		return rMap;
+	}
+	public ArrayList<ArrayList<Double> > initSquaredError(int numLists)
+	{
+		ArrayList<ArrayList<Double> > result = new ArrayList<ArrayList<Double> >();
+		ArrayList<Double> temp = new ArrayList<Double>();
+		for(int i = 0; i <numLists; i++)
+		{
+			result.add(temp);
+		}	
+		return result;
 	}
 
 	public Double calculateRMSE(ArrayList<Double> squaredErrorList,Double n)
