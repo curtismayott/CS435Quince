@@ -54,6 +54,7 @@ System.out.println(args[i]);
 		FileOutputFormat.setOutputPath(job1, new Path("/output/"));
 
 		success = job1.waitForCompletion(true);
+		/*
 		if(success){
 			Job job2 = Job.getInstance(conf, "quince2");
 			job2.setJobName("quince2");
@@ -73,7 +74,8 @@ System.out.println(args[i]);
 				System.out.println("Error in Mapper2/Reducer2");
 				System.exit(1);
 			}
-		}else{
+*/
+		if(!success){
 			System.out.println("Error in Mapper1/Reducer1");
 			System.exit(1);
 		}

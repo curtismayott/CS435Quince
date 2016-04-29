@@ -21,6 +21,7 @@ public class Mapper1 extends Mapper<Object, Text, Text, Text> {
 		row = row.replaceAll("\"", "");
 		String[] columns = row.split(",");
 		state = columns[21];
+		
 		if(!row.contains("State Code") && state.equals(Main.state)){
 			county = columns[22];
 			//create a fold number
