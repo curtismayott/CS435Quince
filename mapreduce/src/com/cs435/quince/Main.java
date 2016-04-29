@@ -54,29 +54,7 @@ System.out.println(args[i]);
 		FileOutputFormat.setOutputPath(job1, new Path("/output/"));
 
 		success = job1.waitForCompletion(true);
-		if(success){
-			Job job2 = Job.getInstance(conf, "quince2");
-			job2.setJobName("quince2");
-        	        job2.setJarByClass(Main.class);
-                	job2.setOutputKeyClass(Text.class);
-                	job2.setOutputValueClass(Text.class);
-                	job2.setMapOutputKeyClass(Text.class);
-                	job2.setMapOutputValueClass(Text.class);
 
-                	job2.setMapperClass(Mapper2.class);
-                	job2.setReducerClass(Reducer2.class);
-			FileInputFormat.addInputPath(job2, new Path("/output/part-r-00000"));
-			FileOutputFormat.setOutputPath(job2, new Path(args[3]));
-			
-			success = job2.waitForCompletion(true);
-			if(!success){
-				System.out.println("Error in Mapper2/Reducer2");
-				System.exit(1);
-			}
-		}else{
-			System.out.println("Error in Mapper1/Reducer1");
-			System.exit(1);
-		}
 		System.exit(success ? 0 : 1);
 	}
 }

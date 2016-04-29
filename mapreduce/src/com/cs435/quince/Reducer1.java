@@ -205,8 +205,7 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 	}
 	public void addReadingToFold(Integer foldNum,Double year,Double reading)
 	{
-		
-		System.out.println(year_pm_reading_map.size() + "*********************************************arraylist size");
+	
 		//arraylist<hashmap<double, arraylist<double>>>
 		ArrayList<Double> list = year_pm_reading_map.get(foldNum).get(year);
 		if(list != null)
