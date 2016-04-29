@@ -4,6 +4,7 @@ import numpy as np
 import csv
 import readStateTable
 import subprocess
+import sys
 CSV = 'state_table.csv'
 HADOOP = "/usr/local/hadoop/bin/hadoop" #path to hadoop
 JARNAME = "analysis.jar"
@@ -20,15 +21,19 @@ LOCALOUTPUT = "." # unless changed local output will be put wherever this script
 #maximum number of years we will predict
 MAXYEARS = np.inf
 
+#flag to tell if need to request parameters
+REQUSTPARAMS = True
+
 #globals that will hold current request parameters
-STARTLAT = np.inf;
-ENDLAT = np.inf;
+STARTLAT = np.inf
+ENDLAT = np.inf
 STATE = None
-STARTLON = np.inf;
-ENDLON = np.inf;
-USERYEARS = np.inf;
+STARTLON = np.inf
+ENDLON = np.inf
+USERYEARS = np.inf
 
 print("driver started")
+
 
 
 #-------------------GET PARAMETERS FROM USER INPUT----------------
@@ -161,9 +166,20 @@ def callHadoop():
 #-----------------------------Plot Results-----------------------------------------------
 def plotResults(resultsDirectory):
 	print("plot results is not implemented")
+#-------------------GET PARAMETERS FROM Command Line----------------
+if(len(sys.argv) == 3):
+	if(validateState(sys.argv[1])):
+		setState(readStateTable.getCorrespondingState(sys.argv[1],CSV))
+	if(validateYears(int(sys.argv[2]),MAXYEARS)):
+		setYears(int(sys.argv[2]))
+	if(parametersValid()):
+		REQUSTPARAMS = False
+else:
+	print("Not enough information from command line requesting parameters")
 #------------------------------MAIN------------------------------------------------------
 def main():
-	requestParameters()
+	if(REQUSTPARAMS):
+		requestParameters()
 	callHadoop()
 
 main()

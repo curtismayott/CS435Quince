@@ -14,11 +14,11 @@ import java.lang.Math;
 public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 	    public boolean DEBUG = false;
 		public ArrayList<HashMap<Double, ArrayList<Double> > > year_pm_reading_map = new ArrayList<HashMap<Double, ArrayList<Double> > >();
-		public HashMap<Integer,Double> sizes = new HashMap<Integer,Double>();
+		
 
         public void reduce(Text key, Iterable<Text> values, Context context)
                         throws IOException, InterruptedException {
-        
+        HashMap<Integer,Double> sizes = new HashMap<Integer,Double>();
         ArrayList<ArrayList<Double> > squaredErrors = new ArrayList<ArrayList<Double> >();         	
         String[] keys = key.toString().split("\t");
 		String state = keys[0];
@@ -182,7 +182,7 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 						Double aTrain = (merge_size * merge_sumXY - merge_sumX * merge_sumY) / (merge_size * merge_sumX2 - merge_sumX * merge_sumX);
 						Double bTrain = (1 / merge_size) * (merge_sumY - aTrain * merge_sumX);
 						sizes.put(fold,merge_size);
-						Double yearPrediction =  aTrain * year * bTrain;
+						Double yearPrediction =  aTrain * year + bTrain;
 						yearPrediction = ((int)(yearPrediction * 100.0)) / 100.0;
 						for(Double reading : year_pm_reading_map.get(fold-1).get(year))
 						{
