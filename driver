@@ -5,6 +5,8 @@ import csv
 import readStateTable
 import subprocess
 import sys
+import uuid
+
 CSV = 'state_table.csv'
 HADOOP = "/usr/local/hadoop/bin/hadoop" #path to hadoop
 JARNAME = "analysis.jar"
@@ -12,7 +14,7 @@ CLASSNAME = "com.cs435.quince.Main"
 INPUTDIRECTORY = "/hourly_88101/hourly_88101.csv" #in hdfs
 #INPUTDIRECTORY = "/hourly_88101/hourly_88101_Fresno.csv" #in hdfs for quick testing
 
-OUTPUTDIRECTORY = "/output" #in hdfs
+OUTPUTDIRECTORY = "/output"  #in hdfs
 LOCALOUTPUT = "." # unless changed local output will be put wherever this script runs
 
 
@@ -160,8 +162,11 @@ def requestParameters():
 		requestParameters()
 #-----------------------------Call to HADOOP---------------------------------------------
 def callHadoop():
+	randomUniqueId = uuid.uuid4()
+	randomUniqueId = str(randomUniqueId)
 	#hadoop analysis.jar com.cs435.quince.Main <numyears> <state> <inputdir> <outputdir>
-	subprocess.call([HADOOP,"jar",JARNAME,CLASSNAME,str(USERYEARS),STATE,INPUTDIRECTORY,OUTPUTDIRECTORY])
+	newOut = OUTPUTDIRECTORY+"/"+STATE+"-"+str(USERYEARS)
+	subprocess.call([HADOOP,"jar",JARNAME,CLASSNAME,str(USERYEARS),STATE,INPUTDIRECTORY,newOut])
 	subprocess.call([HADOOP,"fs","-get", OUTPUTDIRECTORY, LOCALOUTPUT])
 #-----------------------------Plot Results-----------------------------------------------
 def plotResults(resultsDirectory):

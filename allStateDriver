@@ -1,0 +1,46 @@
+#! /usr/bin/python3
+#driver to get all state prediction of pm 2.5
+#must be in the same folder as driver
+
+
+import subprocess
+import readStateTable
+import os
+import numpy as np
+
+states = ["ca"]
+years = [10,20]
+
+LOCALOUTPUT = "./us-pm2.5"
+
+HADOOP = "/usr/local/hadoop/bin/hadoop" #path to hadoop
+HDFSOUTPUT = "/output"
+HDFS = "fs"
+#hdfs commands
+RECURSIVE_REMOVE = "-rmr"
+GET_FILE = "-get"
+LIST_FILES = "-ls"
+CSV = 'state_table.csv'
+statelist = np.array(readStateTable.readCSV(CSV))
+
+
+
+clearOutputDir = HADOOP + " " + HDFS + " " + RECURSIVE_REMOVE +" "+ HDFSOUTPUT
+
+
+for state in statelist[:,1]:
+    for year in years:
+        os.system(clearOutputDir)
+        localFile = LOCALOUTPUT+"/"+state+"-"+str(year)
+        hdfsfile = HDFSOUTPUT+"/"+state+"-"+str(year)
+        print(hdfsfile+"->"+    localFile)
+        callDriver = subprocess.Popen(["./driver",state,str(year)])  
+        callDriver.wait()
+        getOutput = subprocess.Popen([HADOOP,HDFS,GET_FILE,hdfsfile,localFile])
+        getOutput.wait()
+
+
+
+
+
+
