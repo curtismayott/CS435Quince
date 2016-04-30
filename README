@@ -1,1 +1,16 @@
-hello
+run with: "python3 driver"
+computer must have numpy installed
+
+Predicting PM2.5 Readings for the United States.
+For Hadoop's distributed file system.
+  hadoop must have input files in the /hourly_88101 directory.
+To access EPA history data files for use with this program,
+execute the fileDown.py and it will download and place in folder
+named "hourly_88101". 
+
+The year entered on the command line interface is from the
+year 2015, so entering 10 will give 2025.
+
+Execution output will be placed in hdfs in /output
+the format of the output file will be:
+<state> <county>  <prediction>  <root mean squared error> <sample size per county>
