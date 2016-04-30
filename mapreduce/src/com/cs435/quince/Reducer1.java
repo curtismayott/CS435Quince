@@ -202,7 +202,7 @@ public class Reducer1 extends Reducer<Text, Text, Text, Text> {
 
 				Double averageRMSE = calculateAllRMSE(squaredErrors,sizes);
 
-				context.write(new Text(state + " " + county), new Text(Double.toString(y) + "\t" + Double.toString(averageRMSE)));
+				context.write(new Text(state + " " + county), new Text(Double.toString(y) + "\t" + Double.toString(averageRMSE) + "\t" + Double.toString(size)));
 
 			}catch(Exception e){
 				e.printStackTrace();
